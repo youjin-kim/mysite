@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -24,43 +26,8 @@ public class BoardDao {
 	private DataSource dataSource;
 	
 	public Boolean insert(BoardVo vo) {
-		Boolean result = false;
-		Connection connection = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-
-		try {
-			connection = dataSource.getConnection();
-
-			String sql = "insert into board values(null, ?, ?, 0, now(), (select ifnull(max(g_no)+1, 1) from board b), 1, 0, 0, ?)";
-			pstmt = connection.prepareStatement(sql);
-			pstmt.setString(1, vo.getTitle());
-			pstmt.setString(2, vo.getContents());
-			pstmt.setLong(3, vo.getUserNo());
-
-			int count = pstmt.executeUpdate();
-			result = (count == 1);
-
-		} catch (SQLException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				System.out.println("error: " + e);
-			}
-		}
-
-		return result;
-
+		int count = sqlSession.insert("board.insert", vo);
+		return count == 1;
 	}
 
 	public BoardVo update(BoardVo vo) {
@@ -99,65 +66,8 @@ public class BoardDao {
 	}
 
 	public BoardVo get(Long boardNo) {
-		BoardVo result = new BoardVo();
-		Connection connection = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			connection = dataSource.getConnection();
-			String sql = "select b.no, b.title, b.contents, b.hit, date_format(b.reg_date, '%Y-%m-%d %h:%i:%s'), b.g_no, b.o_no, b.depth, u.name, u.no" +
-						 " from board b, user u where b.user_no = u.no and b.no = ?";
-			
-			pstmt = connection.prepareStatement(sql);
-			pstmt.setLong(1, boardNo);
-			
-			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				Long no = rs.getLong(1);
-				String title = rs.getString(2);
-				String contents = rs.getString(3);
-				int hit = rs.getInt(4);
-				String regDate = rs.getString(5);
-				int gNo = rs.getInt(6);
-				int oNo = rs.getInt(7);
-				int depth = rs.getInt(8);
-				String userName = rs.getString(9);
-				Long userNo = rs.getLong(10);
-				
-				result.setNo(no);
-				result.setTitle(title);
-				result.setContents(contents);
-				result.setHit(hit);
-				result.setRegDate(regDate);
-				result.setgNo(gNo);
-				result.setoNo(oNo);
-				result.setDepth(depth);
-				result.setUserName(userName);
-				result.setUserNo(userNo);
-				
-			}
-			
-		} catch (SQLException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				System.out.println("error: " + e);
-			}
-		}
-		return result;
-		
+		BoardVo vo =sqlSession.selectOne("board.getBoardNo", boardNo);
+		return vo;
 	}
 
 	public Boolean insertReply(BoardVo vo) {
@@ -203,71 +113,12 @@ public class BoardDao {
 		
 	}
 
-	public Boolean updateHit(Long no) {
-		Boolean result = false;
-		Connection connection = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			connection = dataSource.getConnection();
-			String sql = "update board set hit = hit + 1 where no = ?";
-			pstmt = connection.prepareStatement(sql);
-			
-			pstmt.setLong(1, no);
-			
-			int count = pstmt.executeUpdate();
-			result = (count == 1);
-			
-		} catch (SQLException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				System.out.println("error: " + e);
-			}
-		}
-
-		return result;
-		
+	public void updateHit(Long boardNo) {
+		sqlSession.selectOne("board.updateHit", boardNo);
 	}
 
 	public void delete(BoardVo vo) {
-		Connection connection = null;
-		PreparedStatement pstmt = null;
-
-		try {
-			connection = dataSource.getConnection();
-
-			String sql = "update board set title = ?, status = ? where no = ?";
-			pstmt = connection.prepareStatement(sql);
-			
-			pstmt.setString(1, "삭제된 글 입니다.");
-			pstmt.setInt(2, vo.getStatus()+1);
-			pstmt.setLong(3, vo.getNo());
-
-			pstmt.executeUpdate();
-
-		} catch (SQLException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				System.out.println("error: " + e);
-			}
-		}
-		
+		sqlSession.delete("board.delete", vo);
 	}
 
 	public BoardVo oNoUpdate(BoardVo vo) {
@@ -302,42 +153,25 @@ public class BoardDao {
 		return result;
 	}
 	
-	public int totalCount() {
-		int totalCount = 0;
-		Connection connection = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			connection = dataSource.getConnection();
-			String sql = "select count(*) as totalcount from board";
-			pstmt = connection.prepareStatement(sql);
-			pstmt.executeUpdate();
-			
-		} catch (SQLException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				System.out.println("error: " + e);
-			}
-		}
-		
-		return totalCount;
-	}
-
 	public int getListCount(String kwd) {
-		int result = sqlSession.selectOne("board.getListCount", kwd);
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("kwd", kwd);
+		
+		int result = sqlSession.selectOne("board.getListCount", map);
 		return result;
+	}
+	
+	public int getListCount() {
+		return sqlSession.selectOne("board.getListCount1");
 	}
 	
 	public List<BoardVo> getList(String kwd, int startInex, int pageSize) {
 		List<BoardVo> result = sqlSession.selectList("board.getList");
+		return result;
+	}
+
+	public List<BoardVo> getList(int startIndex, int pageSize) {
+		List<BoardVo> result = sqlSession.selectList("board.getList1");
 		return result;
 	}
 }

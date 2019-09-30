@@ -51,9 +51,9 @@
 							<td>${vo.regDate }</td>
 							<c:choose>
 								<c:when
-									test="${!empty authUser and authUser.getNo() eq vo.userNo and vo.status ne 1 }">
+									test="${!empty authUser and vo.userNo eq authUser.getNo() and vo.status ne 1 }">
 									<td><a
-										href="${pageContext.servletContext.contextPath }/board/deleteform/${vo.no }/${paging.curPage }"
+										href="${pageContext.servletContext.contextPath }/board/delete/${vo.no }/${paging.curPage }"
 										class="del">삭제</a></td>
 								</c:when>
 								<c:otherwise>

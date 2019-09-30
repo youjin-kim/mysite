@@ -18,13 +18,78 @@
 	]]>
 	</select>
 	
-	<select id="getListCount" resultType="boardvo">
+	<select id="getList1" resultType="boardvo">
 	<![CDATA[
-	select count(*) 
+	select b.no as no, b.title as title, b.contents as contents, 
+	       b.hit as hit, date_format(b.reg_date, '%Y-%m-%d %h:%i:%s') as regDate, 
+	       b.g_no, b.o_no, b.depth, 
+	       u.no as userNo, u.name as userName, b.status
+	  from board b
+	  join user u
+	    on b.user_no = u.no
+  order by g_no desc, o_no asc, reg_date desc
+	]]>
+	</select>
+	
+	<select id="getListCount1" resultType="int">
+	<![CDATA[
+	select count(*)
 	  from board
+	]]>
+	</select>
+	
+	<select id="getListCount" parameterType="map" resultType="boardvo">
+	<![CDATA[
+	select count(*) as listCount
+	  from board
+	]]>
+	<if test=" kwd != '' ">
+	<![CDATA[
 	 where title like CONCAT('%', #{kwd}, '%')
 		or contents like CONCAT('%', #{kwd}, '%')
 	]]>
+	</if>
 	</select>
+	
+	<select id="getBoardNo" parameterType="long" resultType="boardvo">
+	<![CDATA[
+	select b.no, b.title as title, b.contents as contents, 
+	       b.hit, b.g_no, b.o_no, b.depth, u.name as userName, u.no as userNo
+	  from board b
+	  join user u 
+	 where b.user_no = u.no 
+	   and b.no = #{boardNo }
+	]]>
+	</select>
+	
+	<select id="updateHit" parameterType="long" resultType="boardvo">
+	<![CDATA[
+	update board 
+	   set hit = hit+1 
+	 where no = #{boardNo }
+	]]>
+	</select>
+	
+	<insert id="insert" parameterType="boardvo">
+		<![CDATA[
+		insert 
+		  into board
+		values(null, #{title }, #{contents}, 0, now(), (select ifnull(max(#{g_no })+1, 1) from board b), 1, 0, 0, #{user_no}) 
+		]]>
+		<selectKey keyProperty="no" resultType="long" order="AFTER">
+			<![CDATA[
+			select last_insert_id()
+			]]>
+		</selectKey>
+	</insert>
+	
+	<delete id="delete" parameterType="boardvo">
+		<![CDATA[
+		update board 
+		   set title = #{title }, 
+		       status = #{status } 
+		 where no = #{no }
+		]]>
+	</delete>
 
 </mapper>
