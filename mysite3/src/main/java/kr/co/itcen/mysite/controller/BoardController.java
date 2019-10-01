@@ -68,9 +68,10 @@ public class BoardController {
 		return "board/view";
 	}
 	
-	@RequestMapping(value="/delete/{no}", method=RequestMethod.GET)
-	public String delete(@PathVariable("no") Long boardNo, Model model) {
-		model.addAttribute("no", boardNo);
+	@RequestMapping(value="/delete/{no}/{p}", method=RequestMethod.GET)
+	public String delete(HttpSession session, @PathVariable("no") Long boardNo) {
+		BoardVo vo = boardService.get(boardNo);
+		session.setAttribute("vo", vo);
 		return "board/delete";
 	}
 	
@@ -87,14 +88,39 @@ public class BoardController {
 	}
 	
 	@RequestMapping(value="/write", method=RequestMethod.POST)
-	public String insert(@ModelAttribute BoardVo vo, @PathVariable("no") Long userNo) {
-		boardService.insert(vo);
+	public String insert(HttpSession session, @ModelAttribute BoardVo vo) {
+		UserVo userVo = (UserVo) session.getAttribute("authUser");
+		vo.setUserNo(userVo.getNo());
 		
+		boardService.insert(vo);
 		return "redirect:/board/list";
 	}
 	
+	@RequestMapping(value="/reply/{boardNo}/{gNo}/{oNo}/{depth}", method=RequestMethod.GET)
+	public String insertReply() {
+		return "board/reply";
+	}
 	
+	@RequestMapping(value="/reply", method=RequestMethod.POST)
+	public String insertReply(HttpSession session, @ModelAttribute BoardVo vo) {
+		UserVo userVo = (UserVo) session.getAttribute("authUser");
+		vo.setUserNo(userVo.getNo());
+		
+		boardService.insertReply(vo);
+		return "redirect:/board/list";
+	}
 	
+	@RequestMapping(value="/modify/{no}", method=RequestMethod.GET)
+	public String modify(HttpSession session, @PathVariable("no") Long boardNo) {
+		BoardVo vo = boardService.get(boardNo);
+		session.setAttribute("vo", vo);
+		return "board/modify";
+	}
 	
+	@RequestMapping(value="/modify", method=RequestMethod.POST)
+	public String modify(HttpSession session, @ModelAttribute BoardVo vo) {
+		boardService.modify(vo);
+		return "redirect:/board/list";
+	}
 	
 }

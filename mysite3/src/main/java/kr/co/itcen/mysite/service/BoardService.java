@@ -49,5 +49,14 @@ public class BoardService {
 		boardDao.insert(vo);
 	}
 
+	public void modify(BoardVo vo) {
+		boardDao.update(vo);
+	}
+
+	public void insertReply(BoardVo vo) {
+		boardDao.oNoUpdate(vo);
+		boardDao.insertReply(vo);
+	}
+
 	
 }

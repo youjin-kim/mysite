@@ -41,8 +41,8 @@
 								</c:forEach>
 									<img
 										src="${pageContext.servletContext.contextPath }/assets/images/reply.png" />
-								</c:if> <c:if test="${vo.status eq 1 }">${vo.title }</c:if> <c:if
-									test="${vo.status ne 1 }">
+								</c:if> <c:if test="${vo.status%2 != 0 }">${vo.title }</c:if> <c:if
+									test="${vo.status%2 == 0 }">
 									<a
 										href="${pageContext.servletContext.contextPath }/board/view/${vo.no }/${paging.curPage }">${vo.title }</a>
 								</c:if>

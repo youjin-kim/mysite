@@ -3,8 +3,6 @@ package kr.co.itcen.mysite.repository;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,12 +16,11 @@ public class UserDao {
 	@Autowired
 	private SqlSession sqlSession;
 	
-	@Autowired
-	private DataSource dataSource;
-	
 	public Boolean insert(UserVo vo) throws UserDaoException {
 		int count = sqlSession.insert("user.insert", vo);
-		return count == 1;
+		Boolean result = (count == 1);
+		
+		return result;
 	}
 	
 	public UserVo get(UserVo vo) {
@@ -57,7 +54,8 @@ public class UserDao {
 	
 	public Boolean update(UserVo vo ) {
 		int count = sqlSession.update("user.update", vo);
-		return count == 1;
+		Boolean result = (count == 1);
+		return result;
 	}
 
 }

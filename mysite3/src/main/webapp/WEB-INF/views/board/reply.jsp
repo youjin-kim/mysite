@@ -18,11 +18,11 @@
 		<div id="content">
 			<div id="board">
 				<form class="board-form" method="post"
-					action="${pageContext.servletContext.contextPath }/board?p=${param.p }">
-					<input type="hidden" name="a" value="write"> <input
-						type="hidden" name="gNo" value="${vo.gNo }"> <input
-						type="hidden" name="oNo" value="${vo.oNo }"> <input
-						type="hidden" name="depth" value="${vo.depth }">
+					action="${pageContext.servletContext.contextPath }/board/reply">
+				    <input
+						type="hidden" name="gNo" value="${gNo }"> <input
+						type="hidden" name="oNo" value="${oNo }"> <input
+						type="hidden" name="depth" value="${depth }">
 					<table class="tbl-ex">
 						<tr>
 							<th colspan="2">글쓰기</th>
@@ -37,7 +37,7 @@
 						</tr>
 					</table>
 					<div class="bottom">
-						<a href="${pageContext.servletContext.contextPath }/board?p=${param.p }">취소</a>
+						<a href="${pageContext.servletContext.contextPath }/board/list">취소</a>
 						<input type="submit" value="등록">
 					</div>
 				</form>

@@ -21,8 +21,8 @@
 		<div id="content">
 			<div id="board">
 				<form class="board-form" method="post"
-					action="${pageContext.servletContext.contextPath }/board">
-					<input type="hidden" name="a" value="delete"> <input
+					action="${pageContext.servletContext.contextPath }/board/delete">
+					<input
 						type="hidden" name="gNo" value="${vo.gNo }"> <input
 						type="hidden" name="oNo" value="${vo.oNo }"> <input
 						type="hidden" name="depth" value="${vo.depth }"> <input
@@ -34,12 +34,12 @@
 						</tr>
 						<tr>
 							<td class="label">제목</td>
-							<td>${vo.getTitle() }</td>
+							<td>${vo.title }</td>
 						</tr>
 						<tr>
 							<td class="label">내용</td>
 							<td>
-								<div class="view-content">${fn:replace(vo.getContents(), newline, '<br>') }
+								<div class="view-content">${fn:replace(vo.contents, newline, '<br>') }
 								</div>
 							</td>
 						</tr>

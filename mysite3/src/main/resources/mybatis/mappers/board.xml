@@ -22,8 +22,8 @@
 	<![CDATA[
 	select b.no as no, b.title as title, b.contents as contents, 
 	       b.hit as hit, date_format(b.reg_date, '%Y-%m-%d %h:%i:%s') as regDate, 
-	       b.g_no, b.o_no, b.depth, 
-	       u.no as userNo, u.name as userName, b.status
+	       b.g_no as gNo, b.o_no as oNo, b.depth as depth, 
+	       u.no as userNo, u.name as userName, b.status as status
 	  from board b
 	  join user u
 	    on b.user_no = u.no
@@ -53,8 +53,8 @@
 	
 	<select id="getBoardNo" parameterType="long" resultType="boardvo">
 	<![CDATA[
-	select b.no, b.title as title, b.contents as contents, 
-	       b.hit, b.g_no, b.o_no, b.depth, u.name as userName, u.no as userNo
+	select b.no as no, b.title as title, b.contents as contents, 
+	       b.hit as hit, b.g_no as gNo, b.o_no as oNo, b.depth as depth, u.name as userName, u.no as userNo
 	  from board b
 	  join user u 
 	 where b.user_no = u.no 
@@ -74,22 +74,44 @@
 		<![CDATA[
 		insert 
 		  into board
-		values(null, #{title }, #{contents}, 0, now(), (select ifnull(max(#{g_no })+1, 1) from board b), 1, 0, 0, #{user_no}) 
+		values(null, #{title }, #{contents}, 0, now(), (select	ifnull(max(g_no) + 1, 1) as 'gNo' from board b), 1, 0, 0, #{userNo}) 
 		]]>
-		<selectKey keyProperty="no" resultType="long" order="AFTER">
-			<![CDATA[
-			select last_insert_id()
-			]]>
-		</selectKey>
+	</insert>
+	
+	<update id="oNoUpdate" parameterType="boardvo">
+		<![CDATA[
+		update board 
+		   set o_no = o_no+1 
+		 where g_no = #{gNo }
+		   and o_no > #{oNo }   
+		]]>
+	</update>
+	
+	<insert id="insertReply" parameterType="boardvo">
+		<![CDATA[
+		insert 
+		  into board
+		values(null, #{title }, #{contents}, 0, now(), #{gNo }, #{oNo+1 }, #{depth+1 }, 0, #{userNo}) 
+		]]>
 	</insert>
 	
 	<delete id="delete" parameterType="boardvo">
 		<![CDATA[
 		update board 
-		   set title = #{title }, 
-		       status = #{status } 
+		   set title = '삭제된 글 입니다.', 
+		       status = status+1
 		 where no = #{no }
 		]]>
 	</delete>
+	
+	<update id="update" parameterType="boardvo">
+		<![CDATA[
+		update board 
+		   set title = CONCAT('(수정)', #{title }), 
+		       contents = #{contents }, 
+		       status = status+2 
+		 where no = #{no }
+		]]>
+	</update>
 
 </mapper>
