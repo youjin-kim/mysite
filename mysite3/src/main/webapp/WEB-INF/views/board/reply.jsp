@@ -18,7 +18,7 @@
 		<div id="content">
 			<div id="board">
 				<form class="board-form" method="post"
-					action="${pageContext.servletContext.contextPath }/board/reply">
+					action="${pageContext.servletContext.contextPath }/board/write">
 				    <input
 						type="hidden" name="gNo" value="${gNo }"> <input
 						type="hidden" name="oNo" value="${oNo }"> <input

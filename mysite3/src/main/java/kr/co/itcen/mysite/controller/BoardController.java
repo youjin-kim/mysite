@@ -87,26 +87,21 @@ public class BoardController {
 		return "board/write";
 	}
 	
-	@RequestMapping(value="/write", method=RequestMethod.POST)
-	public String insert(HttpSession session, @ModelAttribute BoardVo vo) {
-		UserVo userVo = (UserVo) session.getAttribute("authUser");
-		vo.setUserNo(userVo.getNo());
-		
-		boardService.insert(vo);
-		return "redirect:/board/list";
-	}
-	
 	@RequestMapping(value="/reply/{boardNo}/{gNo}/{oNo}/{depth}", method=RequestMethod.GET)
 	public String insertReply() {
 		return "board/reply";
 	}
 	
-	@RequestMapping(value="/reply", method=RequestMethod.POST)
-	public String insertReply(HttpSession session, @ModelAttribute BoardVo vo) {
+	@RequestMapping(value="/write", method=RequestMethod.POST)
+	public String insert(HttpSession session, @ModelAttribute BoardVo vo) {
 		UserVo userVo = (UserVo) session.getAttribute("authUser");
 		vo.setUserNo(userVo.getNo());
 		
-		boardService.insertReply(vo);
+		if(vo.getgNo() != 0) {
+			boardService.insertReply(vo);
+		}
+		
+		boardService.insert(vo);
 		return "redirect:/board/list";
 	}
 	
