@@ -69,7 +69,7 @@
 					<ul>
 						<c:if test="${paging.curRange ne 1}">
 							<li><a
-								href="${pageContext.servletContext.contextPath }/board/${paging.prevRange }">[◀]</a></li>
+								href="${pageContext.servletContext.contextPath }/board/list?p=${paging.prevRange }">[◀]</a></li>
 						</c:if>
 
 						<c:forEach var="pageNum" begin="${paging.startPage }"
@@ -80,7 +80,7 @@
 								</c:when>
 								<c:otherwise>
 									<li><a
-										href="${pageContext.servletContext.contextPath }/board/${pageNum }">${pageNum }</a></li>
+										href="${pageContext.servletContext.contextPath }/board/list?p=${pageNum }">${pageNum }</a></li>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>
@@ -88,7 +88,7 @@
 						<c:if
 							test="${paging.curRange ne paging.rangeCnt and paging.rangeCnt > 1}">
 							<li><a
-								href="${pageContext.servletContext.contextPath }/board/${paging.nextRange }">[▶]</a></li>
+								href="${pageContext.servletContext.contextPath }/board/list?p=${paging.nextRange }">[▶]</a></li>
 						</c:if>
 					</ul>
 				</div>

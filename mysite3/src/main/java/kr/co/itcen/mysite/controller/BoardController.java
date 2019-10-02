@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.co.itcen.mysite.service.BoardService;
 import kr.co.itcen.mysite.vo.BoardVo;
-import kr.co.itcen.mysite.vo.GuestbookVo;
 import kr.co.itcen.mysite.vo.UserVo;
 
 @Controller
@@ -26,33 +25,26 @@ public class BoardController {
 	private BoardService boardService;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String list(@RequestParam(required = false, defaultValue = "1") int p,
-			HttpSession session, Model model) {
-//		String p = (String) session.getAttribute("p");
-//
-//		int curPage = 0;
-//		if (p == null) {
-//			curPage = 1;
-//		} else {
-//			curPage = Integer.parseInt(p);
-//		}
+	public String list(@RequestParam(value = "p", required = false, defaultValue = "1") int p,
+			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
+			Model model) {
 		
-//		String kwd = (String) session.getAttribute("kwd");
-//		if (kwd == null) {
-//			kwd = "";
-//		}
-//
-//		int listCount = boardService.getListCount(kwd);
-//		Paging paging = new Paging(listCount, p);
-//		List<BoardVo> list = boardService.getList(kwd, p);
-		
-//		UserVo userVo = (UserVo) session.getAttribute("authUser");
-//		session.setAttribute("authUser", userVo);
+		if(kwd != "") {
+			int kwdListCount = boardService.getListCount(kwd);
+			Paging paging = new Paging(kwdListCount, p);
+			List<BoardVo> list = boardService.getList(kwd, kwdListCount, p);
+			model.addAttribute("kwd", kwd);
+			model.addAttribute("list", list);
+			model.addAttribute("paging", paging);
+			
+			return "board/list";
+		}
 		
 		int listCount = boardService.getListCount();
 		Paging paging = new Paging(listCount, p);
 		List<BoardVo> list = boardService.getList(p, listCount);
 		
+		model.addAttribute("kwd", kwd);
 		model.addAttribute("list", list);
 		model.addAttribute("paging", paging);
 
@@ -64,13 +56,15 @@ public class BoardController {
 		boardService.getUpdateHit(boardNo);
 		BoardVo vo = boardService.get(boardNo);
 		
+		session.setAttribute("p", p);
 		session.setAttribute("vo", vo);
 		return "board/view";
 	}
 	
 	@RequestMapping(value="/delete/{no}/{p}", method=RequestMethod.GET)
-	public String delete(HttpSession session, @PathVariable("no") Long boardNo) {
+	public String delete(HttpSession session, @PathVariable("no") Long boardNo, @PathVariable("p") int p) {
 		BoardVo vo = boardService.get(boardNo);
+		session.setAttribute("p", p);
 		session.setAttribute("vo", vo);
 		return "board/delete";
 	}
@@ -82,14 +76,22 @@ public class BoardController {
 		
 	}
 	
-	@RequestMapping(value="/write/{userNO}/{p}", method=RequestMethod.GET)
+	@RequestMapping(value= "/write/{userNO}/{p}", method=RequestMethod.GET)
 	public String insert() {
 		return "board/write";
 	}
 	
-	@RequestMapping(value="/reply/{boardNo}/{gNo}/{oNo}/{depth}", method=RequestMethod.GET)
-	public String insertReply() {
-		return "board/reply";
+	@RequestMapping(value= "/write/{p}/{gNo}/{oNo}/{depth}", method=RequestMethod.GET)
+	public String insert(HttpSession session, @PathVariable("gNo") int gNo,
+			@PathVariable("oNo") int oNo, @PathVariable("depth") int depth,
+			@PathVariable("p") int p) {
+		
+		session.setAttribute("gNo", gNo);
+		session.setAttribute("oNo", oNo);
+		session.setAttribute("depth", depth);
+		session.setAttribute("p", p);
+
+		return "board/write";
 	}
 	
 	@RequestMapping(value="/write", method=RequestMethod.POST)
@@ -98,16 +100,23 @@ public class BoardController {
 		vo.setUserNo(userVo.getNo());
 		
 		if(vo.getgNo() != 0) {
+			vo.setgNo((int) session.getAttribute("gNo"));
+			vo.setoNo((int) session.getAttribute("oNo") + 1);
+			boardService.oNoUpdate(vo);
+			vo.setDepth((int) session.getAttribute("depth") + 1);
+			
 			boardService.insertReply(vo);
+			return "redirect:/board/list";
 		}
 		
 		boardService.insert(vo);
 		return "redirect:/board/list";
 	}
 	
-	@RequestMapping(value="/modify/{no}", method=RequestMethod.GET)
-	public String modify(HttpSession session, @PathVariable("no") Long boardNo) {
+	@RequestMapping(value="/modify/{p}/{no}", method=RequestMethod.GET)
+	public String modify(HttpSession session, @PathVariable("no") Long boardNo,@PathVariable("p") int p) {
 		BoardVo vo = boardService.get(boardNo);
+		session.setAttribute("p", p);
 		session.setAttribute("vo", vo);
 		return "board/modify";
 	}

@@ -39,19 +39,19 @@
 				<div class="bottom">
 					<c:choose>
 						<c:when test="${vo.getUserNo() == authUser.getNo() }">
-							<a href="${pageContext.servletContext.contextPath }/board/list">글목록</a>
+							<a href="${pageContext.servletContext.contextPath }/board/list?p=${p }">글목록</a>
 							<a
-								href="${pageContext.servletContext.contextPath }/board/modify/${vo.no }">글수정</a>
+								href="${pageContext.servletContext.contextPath }/board/modify/${p }/${vo.no }">글수정</a>
 							<a
-								href="${pageContext.servletContext.contextPath }/board/reply/${vo.getNo() }/${vo.getgNo() }/${vo.getoNo() }/${vo.getDepth() }">답글달기</a>
+								href="${pageContext.servletContext.contextPath }/board/write/${p }/${vo.gNo }/${vo.oNo }/${vo.depth }">답글달기</a>
 						</c:when>
 						<c:when test="${!empty authUser and vo.userNo != authUser.getNo() }">
-							<a href="${pageContext.servletContext.contextPath }/board/list">글목록</a>
+							<a href="${pageContext.servletContext.contextPath }/board/list?p=${p }">글목록</a>
 							<a
-								href="${pageContext.servletContext.contextPath }/board/reply/${vo.no }/${vo.getgNo() }/${vo.getoNo() }/${vo.getDepth() }">답글달기</a>
+								href="${pageContext.servletContext.contextPath }/board/write/${p }/${vo.gNo }/${vo.oNo }/${vo.depth }">답글달기</a>
 						</c:when>
 						<c:otherwise>
-							<a href="${pageContext.servletContext.contextPath }/board/list">글목록</a>
+							<a href="${pageContext.servletContext.contextPath }/board/list?p=${p }">글목록</a>
 						</c:otherwise>
 					</c:choose>
 

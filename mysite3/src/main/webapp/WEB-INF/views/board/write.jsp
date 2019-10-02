@@ -19,7 +19,8 @@
 			<div id="board">
 				<form class="board-form" method="post"
 					action="${pageContext.servletContext.contextPath }/board/write">
-					<c:if test="${!empty gNo }">
+					<input type="hidden" name="p" value="${p }">
+					<c:if test="${!empty vo.gNo }">
 					<input
 						type="hidden" name="gNo" value="${gNo }"> <input
 						type="hidden" name="oNo" value="${oNo }"> <input
@@ -39,7 +40,7 @@
 						</tr>
 					</table>
 					<div class="bottom">
-						<a href="${pageContext.servletContext.contextPath }/board/list">취소</a>
+						<a href="${pageContext.servletContext.contextPath }/board/list?=${p}">취소</a>
 						<input type="submit" value="등록">
 					</div>
 				</form>

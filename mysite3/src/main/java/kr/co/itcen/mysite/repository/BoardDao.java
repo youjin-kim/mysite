@@ -57,21 +57,27 @@ public class BoardDao {
 	}
 	
 	public List<BoardVo> getList(int startIndex, int pageSize) {
-		List<BoardVo> result = sqlSession.selectList("board.getList1");
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("startIndex", startIndex);
+		map.put("pageSize", pageSize);
+		
+		List<BoardVo> result = sqlSession.selectList("board.getList1", map);
 		return result;
 	}
 	
 	//paging 처리... ㅠㅜ
 	public int getListCount(String kwd) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("kwd", kwd);
-		
-		int result = sqlSession.selectOne("board.getListCount", map);
+		int result = sqlSession.selectOne("board.getListCount", kwd);
 		return result;
 	}
 	
-	public List<BoardVo> getList(String kwd, int startInex, int pageSize) {
-		List<BoardVo> result = sqlSession.selectList("board.getList");
+	public List<BoardVo> getList(String kwd, int startIndex, int pageSize) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("startIndex", startIndex);
+		map.put("pageSize", pageSize);
+		map.put("kwd", kwd);
+		
+		List<BoardVo> result = sqlSession.selectList("board.getList", map);
 		return result;
 	}
 

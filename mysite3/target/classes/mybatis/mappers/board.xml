@@ -2,23 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="board">
 
-	<select id="getList" resultType="boardvo">
+	<select id="getList" parameterType="map" resultType="boardvo">
 	<![CDATA[
 	select b.no as no, b.title as title, b.contents as contents, 
 	       b.hit as hit, date_format(b.reg_date, '%Y-%m-%d %h:%i:%s') as regDate, 
-	       b.g_no, b.o_no, b.depth, 
-	       u.no, u.name as userName, b.status
+	       b.g_no as gNo, b.o_no as oNo, b.depth as depth, 
+	       u.no as userNo, u.name as userName, b.status as status
 	  from board b
 	  join user u
 	    on b.user_no = u.no
-	 where title like CONCAT('%', #{kwd}, '%')
-		or contents like CONCAT('%', #{kwd}, '%')
-  order by g_no desc, o_no asc
-     limit #{startInex }, #{pageSize }
+	]]>
+	<if test=" kwd != '' ">
+		<![CDATA[
+		 where title like CONCAT('%', #{kwd}, '%')
+			or contents like CONCAT('%', #{kwd}, '%')
+		]]>
+	</if>
+	<![CDATA[
+  order by g_no desc, o_no asc, reg_date desc
+     limit #{startIndex}, #{pageSize}
 	]]>
 	</select>
 	
-	<select id="getList1" resultType="boardvo">
+	<select id="getList1" parameterType="map" resultType="boardvo">
 	<![CDATA[
 	select b.no as no, b.title as title, b.contents as contents, 
 	       b.hit as hit, date_format(b.reg_date, '%Y-%m-%d %h:%i:%s') as regDate, 
@@ -28,6 +34,7 @@
 	  join user u
 	    on b.user_no = u.no
   order by g_no desc, o_no asc, reg_date desc
+     limit #{startIndex}, #{pageSize}
 	]]>
 	</select>
 	
@@ -38,7 +45,7 @@
 	]]>
 	</select>
 	
-	<select id="getListCount" parameterType="map" resultType="boardvo">
+	<select id="getListCount" parameterType="string" resultType="boardvo">
 	<![CDATA[
 	select count(*) as listCount
 	  from board
@@ -58,7 +65,7 @@
 	  from board b
 	  join user u 
 	 where b.user_no = u.no 
-	   and b.no = #{boardNo }
+	   and b.no = #{boardNo}
 	]]>
 	</select>
 	
@@ -66,7 +73,7 @@
 	<![CDATA[
 	update board 
 	   set hit = hit+1 
-	 where no = #{boardNo }
+	 where no = #{boardNo}
 	]]>
 	</select>
 	
@@ -74,7 +81,7 @@
 		<![CDATA[
 		insert 
 		  into board
-		values(null, #{title }, #{contents}, 0, now(), (select	ifnull(max(g_no) + 1, 1) as 'gNo' from board b), 1, 0, 0, #{userNo}) 
+		values(null, #{title}, #{contents}, 0, now(), (select	ifnull(max(g_no) + 1, 1) as 'gNo' from board b), 1, 0, 0, #{userNo}) 
 		]]>
 	</insert>
 	
@@ -82,8 +89,8 @@
 		<![CDATA[
 		update board 
 		   set o_no = o_no+1 
-		 where g_no = #{gNo }
-		   and o_no > #{oNo }   
+		 where g_no = #{gNo}
+		   and o_no >= #{oNo}   
 		]]>
 	</update>
 	
@@ -91,7 +98,7 @@
 		<![CDATA[
 		insert 
 		  into board
-		values(null, #{title }, #{contents}, 0, now(), #{gNo }, #{oNo+1 }, #{depth+1 }, 0, #{userNo}) 
+		values(null, #{title}, #{contents}, 0, now(), #{gNo}, #{oNo}, #{depth}, 0, #{userNo}) 
 		]]>
 	</insert>
 	
@@ -100,17 +107,17 @@
 		update board 
 		   set title = '삭제된 글 입니다.', 
 		       status = status+1
-		 where no = #{no }
+		 where no = #{no}
 		]]>
 	</delete>
 	
 	<update id="update" parameterType="boardvo">
 		<![CDATA[
 		update board 
-		   set title = CONCAT('(수정)', #{title }), 
-		       contents = #{contents }, 
+		   set title = CONCAT('(수정)', #{title}), 
+		       contents = #{contents}, 
 		       status = status+2 
-		 where no = #{no }
+		 where no = #{no}
 		]]>
 	</update>
 

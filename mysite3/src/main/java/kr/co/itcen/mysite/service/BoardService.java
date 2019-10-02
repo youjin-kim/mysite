@@ -23,8 +23,8 @@ public class BoardService {
 		return boardDao.getListCount();
 	}
 
-	public List<BoardVo> getList(String kwd, int curPage) {
-		Paging paging = new Paging(getListCount(kwd), curPage);
+	public List<BoardVo> getList(String kwd, int listCount, int p) {
+		Paging paging = new Paging(listCount, p);
 		return boardDao.getList(kwd, paging.getStartIndex(), paging.getPageSize());
 	}
 
@@ -53,10 +53,12 @@ public class BoardService {
 		boardDao.update(vo);
 	}
 
-	public void insertReply(BoardVo vo) {
+	public void oNoUpdate(BoardVo vo) {
 		boardDao.oNoUpdate(vo);
+	}
+
+	public void insertReply(BoardVo vo) {
 		boardDao.insertReply(vo);
 	}
 
-	
 }
