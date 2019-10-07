@@ -21,13 +21,14 @@
 				<form id="update-form" name="updateForm" method="post"
 					action="${pageContext.servletContext.contextPath }/user/update">
 					<input type='hidden' name="no" value="${authUser.getNo() }">
-					<label class="block-label" for="name">이름</label> <input id="name"
-						name="name" type="text" value=""> <label
-						class="block-label" for="email">이메일</label>
+					<label class="block-label" for="name">이름</label> 
+					
+					<input id="name" name="name" type="text" value=""> 
+					<label class="block-label" for="email">이메일</label>
 					<h4>${authUser.getEmail() }</h4>
 
-					<label class="block-label">패스워드</label> <input name="password"
-						type="password" value="">
+					<label class="block-label">패스워드</label>
+					<input name="password" type="password" value="">
 
 					<fieldset>
 						<c:choose>
