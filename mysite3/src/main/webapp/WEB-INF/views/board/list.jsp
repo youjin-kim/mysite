@@ -18,10 +18,9 @@
 		<div id="content">
 			<div id="board">
 				<form id="search_form"
-					action="${pageContext.servletContext.contextPath }/board/list"
-					method="post">
-					<input type="text" id="kwd" name="kwd" value=""> <input
-						type="submit" value="찾기">
+					action="${pageContext.servletContext.contextPath }/board/list" method="get">
+					<input type="text" id="kwd" name="kwd" value="${kwd }"> 
+					<input type="submit" value="찾기">
 				</form>
 				<table class="tbl-ex">
 					<tr>
@@ -80,7 +79,7 @@
 								</c:when>
 								<c:otherwise>
 									<li><a
-										href="${pageContext.servletContext.contextPath }/board/list?p=${pageNum }">${pageNum }</a></li>
+										href="${pageContext.servletContext.contextPath }/board/list?p=${pageNum }&kwd=${kwd }">${pageNum }</a></li>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>

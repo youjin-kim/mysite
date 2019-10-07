@@ -19,18 +19,9 @@ public class BoardService {
 		return boardDao.getListCount(kwd);
 	}
 	
-	public int getListCount() {
-		return boardDao.getListCount();
-	}
-
 	public List<BoardVo> getList(String kwd, int listCount, int p) {
 		Paging paging = new Paging(listCount, p);
 		return boardDao.getList(kwd, paging.getStartIndex(), paging.getPageSize());
-	}
-
-	public List<BoardVo> getList(int p, int listCount) {
-		Paging paging = new Paging(listCount, p);
-		return boardDao.getList(paging.getStartIndex(), paging.getPageSize());
 	}
 	
 	public BoardVo get(Long boardNo) {

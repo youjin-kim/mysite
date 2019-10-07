@@ -7,6 +7,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import kr.co.itcen.mysite.vo.UserVo;
+
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
@@ -30,6 +32,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		//4. @Auth가 없으면 class type에 있을 수 있으므로...
 		if(auth == null) {
 			//과제: class type에서 @Auth가 있는지 확인해 봐야한다.
+			auth = handlerMethod.getBeanType().getAnnotation(Auth.class);
 		}
 		
 		//5. @Auth가 없으면 
@@ -39,7 +42,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		
 		//6. @Auth가 class나 method에 붙어 있기 때문에 인증 여부를 체크한다.
 		HttpSession session = request.getSession();
-		if(session == null || session.getAttribute("authUser") == null) {
+		UserVo authUser = (UserVo) session.getAttribute("authUser");
+		if(session == null || authUser == null) {
 			response.sendRedirect(request.getContextPath() + "/user/login");
 			return false;
 		}
@@ -54,9 +58,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		}
 		
 		//10. 메소드의 @Auth의 Role이 "ADMIN"인 경우 --과제
+		if("ADMIN".equals(role)) {
+			if(authUser.getRole().equals("ADMIN") == false) {
+				response.sendRedirect(request.getContextPath() + "/");
+				return false;
+			}
+			return true;
+		}
 		
-		
-		return false;
+		return true;
 	}
 
 }

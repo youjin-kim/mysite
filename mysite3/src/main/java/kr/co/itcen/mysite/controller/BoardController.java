@@ -28,8 +28,7 @@ public class BoardController {
 	public String list(@RequestParam(value = "p", required = false, defaultValue = "1") int p,
 			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 			Model model) {
-		
-		if(kwd != "") {
+		if(kwd != null) {
 			int kwdListCount = boardService.getListCount(kwd);
 			Paging paging = new Paging(kwdListCount, p);
 			List<BoardVo> list = boardService.getList(kwd, kwdListCount, p);
@@ -40,13 +39,13 @@ public class BoardController {
 			return "board/list";
 		}
 		
-		int listCount = boardService.getListCount();
-		Paging paging = new Paging(listCount, p);
-		List<BoardVo> list = boardService.getList(p, listCount);
-		
+		kwd = null;
+		int kwdListCount = boardService.getListCount(kwd);
+		Paging paging = new Paging(kwdListCount, p);
+		List<BoardVo> list = boardService.getList(kwd, kwdListCount, p);
 		model.addAttribute("kwd", kwd);
 		model.addAttribute("list", list);
-		model.addAttribute("paging", paging);
+		model.addAttribute("paging", paging); 
 
 		return "board/list";
 	}

@@ -52,30 +52,18 @@ public class BoardDao {
 		sqlSession.selectOne("board.oNoUpdate", vo);
 	}
 	
-	public int getListCount() {
-		return sqlSession.selectOne("board.getListCount1");
-	}
-	
-	public List<BoardVo> getList(int startIndex, int pageSize) {
-		Map<String, Integer> map = new HashMap<String, Integer>();
-		map.put("startIndex", startIndex);
-		map.put("pageSize", pageSize);
-		
-		List<BoardVo> result = sqlSession.selectList("board.getList1", map);
-		return result;
-	}
-	
-	//paging 처리... ㅠㅜ
 	public int getListCount(String kwd) {
-		int result = sqlSession.selectOne("board.getListCount", kwd);
-		return result;
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("kwd", kwd);
+		
+		return sqlSession.selectOne("board.getListCount", map);
 	}
 	
 	public List<BoardVo> getList(String kwd, int startIndex, int pageSize) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("kwd", kwd);
 		map.put("startIndex", startIndex);
 		map.put("pageSize", pageSize);
-		map.put("kwd", kwd);
 		
 		List<BoardVo> result = sqlSession.selectList("board.getList", map);
 		return result;
