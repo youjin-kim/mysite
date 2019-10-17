@@ -69,4 +69,12 @@ public class UserController {
 		return "redirect:/";
 	}
 	
+	@RequestMapping(value="/auth", method=RequestMethod.POST)
+	public void auth() {
+	}
+	
+	@RequestMapping(value="/logout", method=RequestMethod.GET)
+	public void logout() {
+	}
+	
 }
