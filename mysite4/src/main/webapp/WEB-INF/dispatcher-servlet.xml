@@ -17,39 +17,14 @@
 	
 	<!-- validator, conversionService, messageConverter를 자동으로 등록 -->
 	<mvc:annotation-driven>
-		<mvc:message-converters>
-			<bean
-				class="org.springframework.http.converter.StringHttpMessageConverter">
-				<property name="supportedMediaTypes">
-					<list>
-						<value>text/html; charset=UTF-8</value>
-					</list>
-				</property>
-			</bean>
-			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-   				<property name="supportedMediaTypes">
-			       <list>
-			            <value>application/json; charset=UTF-8</value>
-			        </list>
-			   </property>
-			</bean>
-		</mvc:message-converters>
-
 		<!-- Argument Resolvers -->
 		<mvc:argument-resolvers>
 			<bean class="kr.co.itcen.mysite.security.AuthUserHandlerMethodArgumentResolver" />
 		</mvc:argument-resolvers>
-	
 	</mvc:annotation-driven>
 
 	<!-- Interceptor -->
 	<mvc:interceptors>
-	<!--  
-		<mvc:interceptor>
-			<mvc:mapping path="/user/**"/>
-			<bean class="kr.co.itcen.mysite.interceptor.MyInterceptor02" />
-		</mvc:interceptor>
-	-->
 		<mvc:interceptor>
 			<mvc:mapping path="/user/auth"/>
 			<bean class="kr.co.itcen.mysite.security.LoginInterceptor" />
@@ -79,5 +54,4 @@
 	<context:annotation-config />
 	<context:component-scan
 		base-package="kr.co.itcen.mysite.controller, kr.co.itcen.mysite.exception" />
-
 </beans>
